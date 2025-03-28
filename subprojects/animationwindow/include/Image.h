@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <Point.h>
+#include "Point.h"
 #include <filesystem>
 #include "SDL_render.h"
 
@@ -13,6 +13,7 @@ namespace TDT4102 {
     public:
         explicit Image();
         explicit Image(std::filesystem::path pathToImageFile);
+        ~Image();
 
         int width = 0;
         int height = 0;

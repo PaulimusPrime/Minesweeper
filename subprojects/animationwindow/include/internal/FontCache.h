@@ -47,11 +47,11 @@ namespace TDT4102::internal {
         std::unordered_map<Font, std::unordered_map<unsigned int, nk_font*>> loadedFonts;
         std::unordered_map<Font, std::unordered_map<unsigned int, nk_font_atlas*>> loadedAtlases;
 
-        std::filesystem::path findTTFInDirectory(const std::filesystem::path& directoryToSearch, const std::string& fontFileName);
+        std::filesystem::path findTTFInDirectory(const std::filesystem::path &directoryToSearch, const std::string &fontFileName);
         std::filesystem::path findTTFFile(const std::string &filename);
         void loadFont(nk_context *context, TDT4102::Font face, unsigned int size);
     public:
-        void initialise();
+        void initialize();
         void setFont(nk_context* context, TDT4102::Font face, unsigned int size);
     };
 }

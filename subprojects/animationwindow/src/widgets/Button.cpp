@@ -32,6 +32,6 @@ void TDT4102::Button::update(nk_context *context) {
     nk_style_pop_style_item(context);
 }
 
-void TDT4102::Button::setLabel(std::string newlabel) {
-    label = newlabel;
+void TDT4102::Button::setLabel(std::string newLabel) {
+    label = newLabel;
 }

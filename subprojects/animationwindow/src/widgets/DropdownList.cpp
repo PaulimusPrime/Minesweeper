@@ -1,14 +1,16 @@
 #include "widgets/DropdownList.h"
 #include <stdexcept>
 
-TDT4102::DropdownList::DropdownList(TDT4102::Point location, int width, int height, std::vector<std::string> &options) 
-    : TDT4102::Widget(location, width, height), options{options} {
-    if(options.size() == 0) {
+TDT4102::DropdownList::DropdownList(TDT4102::Point location, unsigned int width, unsigned int height, std::vector<std::string> &initialOptions) 
+    : TDT4102::Widget(location, width, height) {
+    if(initialOptions.size() == 0) {
         throw std::runtime_error("The list of options must contain at least one option to choose from!");
     }
+    options = initialOptions;
+
 }
 
-std::string TDT4102::DropdownList::getValue() {
+std::string TDT4102::DropdownList::getSelectedValue() const {
     return options.at(selectedIndex);
 }
 
@@ -26,6 +28,6 @@ void TDT4102::DropdownList::update(nk_context *context) {
     }
 }
 
-void TDT4102::DropdownList::setOptions(std::vector<std::string>& updatedOptionsList) {
+void TDT4102::DropdownList::setOptions(std::vector<std::string> &updatedOptionsList) {
     options = updatedOptionsList;
 }

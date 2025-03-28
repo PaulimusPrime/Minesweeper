@@ -41,7 +41,7 @@ TDT4102::AnimationWindow::AnimationWindow(int x, int y, int width, int height, c
     }
 
     // Default window background colour
-    SDL_SetRenderDrawColor(rendererHandle, backgroundColour.redChannel, backgroundColour.greenChannel, backgroundColour.blueChannel, backgroundColour.alphaChannel);
+    SDL_SetRenderDrawColor(rendererHandle, backgroundColor.redChannel, backgroundColor.greenChannel, backgroundColor.blueChannel, backgroundColor.alphaChannel);
     SDL_RenderClear(rendererHandle);
 
     SDL_RendererInfo rendererInfo;
@@ -50,7 +50,7 @@ TDT4102::AnimationWindow::AnimationWindow(int x, int y, int width, int height, c
     std::cout << "Created an SDL renderer with name: " << rendererInfo.name << std::endl;
 
     context = nk_sdl_init(windowHandle, rendererHandle);
-    fontCache.initialise();
+    fontCache.initialize();
     fontCache.setFont(context, Font::defaultFont, 18);
     nk_clear(context);
 }
@@ -60,6 +60,8 @@ TDT4102::AnimationWindow::~AnimationWindow() {
 }
 
 void TDT4102::AnimationWindow::destroy() {
+    this->destroyed = true;
+
     // Free SDL resources depending on how much ended up being initialised in the constructor
     if (rendererHandle != nullptr) {
         SDL_DestroyRenderer(rendererHandle);
@@ -73,13 +75,16 @@ void TDT4102::AnimationWindow::destroy() {
         nk_free(context);
         context = nullptr;
     }
+    // Needed for MacOS
+    // Window does not close unless the events are pumped
+    // after requesting that
+    pump_events();
 }
 
-void TDT4102::AnimationWindow::show_frame() {
-    SDL_RenderPresent(rendererHandle);
-
+void TDT4102::AnimationWindow::pump_events() {
     SDL_Event event;
-    nk_input_begin(context);
+    SDL_PumpEvents();
+ 
     while (SDL_PollEvent(&event)) {
         if (event.type == SDL_QUIT) {
             closeRequested = true;
@@ -102,10 +107,22 @@ void TDT4102::AnimationWindow::show_frame() {
             } else if (event.button.button == SDL_BUTTON_RIGHT) {
                 currentRightMouseButtonState = false;
             }
+        } else if (event.type == SDL_MOUSEWHEEL) {
+            deltaMouseWheel = event.wheel.preciseY; // The amount scrolled vertically, positive away from the user and negative toward the user
         }
 
-        nk_sdl_handle_event(&event);
+        if(!destroyed) {
+            nk_sdl_handle_event(&event);
+        }
+        
     }
+}
+
+void TDT4102::AnimationWindow::show_frame() {
+    SDL_RenderPresent(rendererHandle);
+    deltaMouseWheel = 0;
+    nk_input_begin(context);
+    pump_events();
     nk_input_end(context);
 }
 
@@ -128,7 +145,7 @@ void TDT4102::AnimationWindow::next_frame() {
 
     // Colour must be reset as a previously drawn element may have changed the current colour
     if (!keepPreviousFrame) {
-        SDL_SetRenderDrawColor(rendererHandle, backgroundColour.redChannel, backgroundColour.greenChannel, backgroundColour.blueChannel, backgroundColour.alphaChannel);
+        SDL_SetRenderDrawColor(rendererHandle, backgroundColor.redChannel, backgroundColor.greenChannel, backgroundColor.blueChannel, backgroundColor.alphaChannel);
         SDL_RenderClear(rendererHandle);
     }
 
@@ -302,14 +319,14 @@ void TDT4102::AnimationWindow::draw_arc(TDT4102::Point center, int width, int he
     SDL_RenderDrawLines(rendererHandle, internal::circleBorderBuffer.data(), internal::SLICES_PER_CIRCLE);
 }
 
-bool TDT4102::AnimationWindow::is_key_down(KeyboardKey key) {
+bool TDT4102::AnimationWindow::is_key_down(KeyboardKey key) const {
     if (currentKeyStates.count(key) == 0) {
         return false;
     }
     return currentKeyStates.at(key);
 }
 
-TDT4102::Point TDT4102::AnimationWindow::get_mouse_coordinates() {
+TDT4102::Point TDT4102::AnimationWindow::get_mouse_coordinates() const {
     int mouseX, mouseY;
     SDL_GetMouseState(&mouseX, &mouseY);
     return {mouseX, mouseY};
@@ -328,17 +345,17 @@ void TDT4102::AnimationWindow::show_error_dialog(const std::string& message) con
     SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error", message.c_str(), windowHandle);
 }
 
-TDT4102::Point TDT4102::AnimationWindow::getWindowDimensions() {
+TDT4102::Point TDT4102::AnimationWindow::getWindowDimensions() const {
     TDT4102::Point dimensions;
     SDL_GetRendererOutputSize(rendererHandle, &dimensions.x, &dimensions.y);
     return dimensions;
 }
 
-int TDT4102::AnimationWindow::width() {
+int TDT4102::AnimationWindow::width() const {
     return getWindowDimensions().x;
 }
 
-int TDT4102::AnimationWindow::height() {
+int TDT4102::AnimationWindow::height() const {
     return getWindowDimensions().y;
 }
 
@@ -348,6 +365,10 @@ bool TDT4102::AnimationWindow::is_left_mouse_button_down() const {
 
 bool TDT4102::AnimationWindow::is_right_mouse_button_down() const {
     return currentRightMouseButtonState;
+}
+
+float TDT4102::AnimationWindow::get_delta_mouse_wheel() const {
+    return deltaMouseWheel;
 }
 
 void TDT4102::AnimationWindow::startNuklearDraw(TDT4102::Point location, std::string uniqueWindowName, unsigned int width, unsigned int height) {
@@ -390,5 +411,7 @@ void TDT4102::AnimationWindow::endNuklearDraw() {
 }
 
 void TDT4102::AnimationWindow::setBackgroundColor(TDT4102::Color newBackgroundColor) {
-    backgroundColour = newBackgroundColor;
+    backgroundColor = newBackgroundColor;
+    SDL_SetRenderDrawColor(rendererHandle, backgroundColor.redChannel, backgroundColor.greenChannel, backgroundColor.blueChannel, backgroundColor.alphaChannel);
+    SDL_RenderClear(rendererHandle);
 }

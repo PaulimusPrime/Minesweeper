@@ -16,6 +16,7 @@
 #include "internal/FontCache.h"
 #include "internal/nuklear_configured.h"
 #include "internal/windows_main_fix.h"
+#include "MessageType.h"
 
 namespace TDT4102 {
 // Forward declaration of Widget class
@@ -41,10 +42,12 @@ class AnimationWindow {
    private:
     void show_frame();
     void update_gui();
-    TDT4102::Point getWindowDimensions();
+    void pump_events();
+    TDT4102::Point getWindowDimensions() const;
     void startNuklearDraw(TDT4102::Point location, std::string uniqueWindowName, unsigned int width = 0, unsigned int height = 0);
     void endNuklearDraw();
     void destroy();
+    bool destroyed = false;
 
     // If set to true, new shapes will be drawn on top of the old ones. Can create some neat effects.
     // However, note that GUI elements such as buttons will not draw themselves correctly if you use this.
@@ -54,7 +57,7 @@ class AnimationWindow {
 
     std::vector<std::reference_wrapper<TDT4102::Widget>> widgets;
 
-    TDT4102::Color backgroundColour = TDT4102::Color::white;
+    TDT4102::Color backgroundColor = TDT4102::Color::white;
 
     // SDL related context
     SDL_Window* windowHandle = nullptr;
@@ -69,6 +72,7 @@ class AnimationWindow {
     std::unordered_map<KeyboardKey, bool> currentKeyStates;
     bool currentLeftMouseButtonState = false;
     bool currentRightMouseButtonState = false;
+    float deltaMouseWheel = 0;
 
    public:
     explicit AnimationWindow(int x = 50, int y = 50, int width = 1024, int height = 768, const std::string& title = "Animation Window");
@@ -105,8 +109,8 @@ class AnimationWindow {
     void draw_arc(TDT4102::Point center, int width, int height, int start_degree, int end_degree, TDT4102::Color color = TDT4102::Color::black);
 
     // And these functions are for handling input
-    bool is_key_down(KeyboardKey key);
-    TDT4102::Point get_mouse_coordinates();
+    bool is_key_down(KeyboardKey key) const;
+    TDT4102::Point get_mouse_coordinates() const;
     bool is_left_mouse_button_down() const;
     bool is_right_mouse_button_down() const;
 
@@ -117,11 +121,13 @@ class AnimationWindow {
     void show_info_dialog(const std::string& message) const;
     // Show an alert message to the user
     void show_error_dialog(const std::string& message) const;
-
+    
     // Getters for the window dimensions
-    int width();
-    int height();
+    int width() const;
+    int height() const;
 
     void setBackgroundColor(TDT4102::Color newBackgroundColor);
+
+    float get_delta_mouse_wheel() const;
 };
 }  // namespace TDT4102

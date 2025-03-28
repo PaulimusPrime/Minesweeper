@@ -12,8 +12,8 @@ namespace TDT4102 {
     protected:
         void update(nk_context* context) override;
     public:
-        explicit DropdownList(TDT4102::Point location, int width, int height, std::vector<std::string> &options);
-        std::string getValue();
-        void setOptions(std::vector<std::string>& updatedOptionsList);
+        explicit DropdownList(TDT4102::Point location, unsigned int width, unsigned int height, std::vector<std::string> &initialOptions);
+        std::string getSelectedValue() const;
+        void setOptions(std::vector<std::string> &updatedOptionsList);
     };
 }

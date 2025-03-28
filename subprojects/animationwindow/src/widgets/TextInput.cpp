@@ -1,7 +1,7 @@
 #include "widgets/TextInput.h"
 
 void TDT4102::TextInput::update(nk_context *context) {
-    nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_ALWAYS_INSERT_MODE | NK_EDIT_BOX | NK_EDIT_SIMPLE, contents.data(), internal::TEXT_INPUT_CHARACTER_LIMIT, nk_filter_ascii);
+    nk_edit_string_zero_terminated(context, NK_EDIT_SELECTABLE | NK_EDIT_ALWAYS_INSERT_MODE | NK_EDIT_BOX | NK_EDIT_SIMPLE, const_cast<char*>(contents.data()), internal::TEXT_INPUT_CHARACTER_LIMIT, nk_filter_ascii);
     
     // Detect whether any editing of the string has occurred
     // Nuklear only reports whether the text box has lost focus
@@ -20,7 +20,7 @@ TDT4102::TextInput::TextInput(TDT4102::Point location, unsigned int width, unsig
     previousContents.resize(internal::TEXT_INPUT_CHARACTER_LIMIT);
 }
 
-std::string TDT4102::TextInput::getText() {
+std::string TDT4102::TextInput::getText() const {
     // The editing string contains a large number of zeroes at the end
     // This chops those off
     return std::string(contents.data());

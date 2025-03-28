@@ -1,4 +1,4 @@
-project('animationwindow', ['c', 'cpp'], version: '0.01', default_options: ['cpp_std=c++20', 'default_library=static', 'buildtype=debugoptimized'])
+project('animationwindow', ['c', 'cpp'], version: '0.01', default_options: ['cpp_std=c++20', 'c_std=c17', 'default_library=static', 'buildtype=debugoptimized'])
 
 if host_machine.system() == 'windows'
     sdl2_dep = subproject('sdl2_windows').get_variable('sdl2_windows_dep')
@@ -14,8 +14,12 @@ build_files = [
     'src/internal/KeyboardKeyConverter.cpp',
     'src/internal/nuklear_implementation.cpp',
     'src/widgets/Button.cpp',
+    'src/widgets/RadioButton.cpp',
+    'src/widgets/CheckBox.cpp',
     'src/widgets/TextInput.cpp',
+    'src/widgets/TextBox.cpp',
     'src/widgets/DropdownList.cpp',
+    'src/widgets/Slider.cpp',
     'src/AnimationWindow.cpp', 
     'src/Color.cpp', 
     'src/Image.cpp', 

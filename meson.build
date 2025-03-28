@@ -1,4 +1,4 @@
-project('testproject', 'cpp',
+project('GUI Project', 'cpp',
   version : '0.1',
   default_options : ['warning_level=2',
                      'cpp_std=c++20',
@@ -14,8 +14,7 @@ else
 endif
 
 animationwindow_dep = dependency('animationwindow', fallback: ['animationwindow', 'animationwindow_dep'])
-# TODO: slett std_lib_facilities fra animationwindow. Kommenter samtidig ut de to følgende linjene
-# std_lib_facilities_dep = dependency('std_lib_facilities', fallback: ['std_lib_facilities', 'std_lib_facilities_dep'])
+std_lib_facilities_dep = dependency('std_lib_facilities', fallback: ['std_lib_facilities', 'std_lib_facilities_dep'])
 
 
 if host_machine.system() == 'linux'
@@ -32,6 +31,6 @@ exe = executable(
 'MinesweeperWindow.cpp',
 'Tile.cpp',
 'main.cpp',
-  dependencies : [animationwindow_dep, sdl2_dep],
+  dependencies : [animationwindow_dep, sdl2_dep, std_lib_facilities_dep],
   cpp_args : compiler_flags
 )
