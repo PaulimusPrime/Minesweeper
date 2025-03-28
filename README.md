@@ -1,7 +1,7 @@
 # Minesweeper
 ## Project description
-One of the assignements in TDT4102 - Procedural and Object-Oriented Programming at NTNU
-Using libraries provided by NTNU. 
+Answering an assignements in in the courseTDT4102 - Procedural and Object-Oriented Programming at NTNU
+Using libraries provided by NTNU (`AnimationWindow`).
 
 This project aims to produce the graphics and functionality required to play the classical game minesweeper.
 
@@ -23,7 +23,9 @@ int main() {
     constexpr int mines = 12;
 
     ...
+
 }
 ```
 These values can be chosen to decide whatever wanted size and difficulty of the game.
+
 _Written in VSCode on MacOS_
